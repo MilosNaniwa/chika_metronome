@@ -29,6 +29,7 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
 
     _soundPool = Soundpool(
       streamType: StreamType.notification,
+      maxStreams: 10,
     );
 
     _isEnabledPlaybackMode = false;
@@ -71,11 +72,11 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
 
           _metronomeSubscription = Stream.periodic(
             Duration(
-              milliseconds: 1500,
+              milliseconds: 300,
             ),
           ).listen(
             (x) async {
-              final streamId = await _soundPool.play(_soundId);
+              await _soundPool.play(_soundId);
             },
           );
 
