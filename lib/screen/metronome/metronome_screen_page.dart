@@ -138,7 +138,7 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              "タイトル",
+              "メトロ",
             ),
           ),
           body: Column(
