@@ -44,3 +44,13 @@ class PauseOperatedState extends MetronomeScreenState {
   @override
   String toString() => '停止操作後';
 }
+
+class BpmChangingState extends MetronomeScreenState {
+  @override
+  String toString() => 'BPM変更中';
+}
+
+class BpmChangedState extends MetronomeScreenState {
+  @override
+  String toString() => 'BPM変更後';
+}

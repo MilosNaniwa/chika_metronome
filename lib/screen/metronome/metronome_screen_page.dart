@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chika_metronome/common/constants.dart';
 import 'package:chika_metronome/screen/metronome/metronome_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,12 +21,16 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
   StreamSubscription _metronomeSubscription;
 
   Soundpool _soundPool;
-  var _soundData;
-  var _soundId;
+  ByteData _soundData;
+  int _soundId;
+
+  int _bpm;
 
   @override
   void initState() {
     super.initState();
+
+    _bpm = 120;
 
     _soundPool = Soundpool(
       streamType: StreamType.notification,
@@ -57,7 +62,7 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
         // 初期化後
         if (state is InitializedState) {
           _soundData = await rootBundle.load(
-            "assets/sounds/decision1.mp3",
+            Constants.pathToSound,
           );
           _soundId = await _soundPool.load(_soundData);
 
@@ -70,13 +75,16 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
         else if (state is PlaybackOperatingState) {
           _isEnabledPlaybackMode = true;
 
+          final microSeconds = 60 / _bpm * 1000000;
+
+          await _metronomeSubscription?.cancel();
           _metronomeSubscription = Stream.periodic(
             Duration(
-              milliseconds: 300,
+              microseconds: microSeconds.floor(),
             ),
           ).listen(
-            (x) async {
-              await _soundPool.play(_soundId);
+            (x) {
+              _soundPool.play(_soundId);
             },
           );
 
@@ -109,6 +117,22 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
             OnCompleteRenderingEvent(),
           );
         }
+
+        // BPM変更中
+        else if (state is BpmChangingState) {
+          _bpm++;
+
+          _bloc.add(
+            OnCompleteChangingBpmEvent(),
+          );
+        }
+
+        // BPM変更後
+        else if (state is BpmChangedState) {
+          _bloc.add(
+            OnRequestPlayingEvent(),
+          );
+        }
       },
       builder: (BuildContext context, state) {
         return Scaffold(
@@ -117,30 +141,93 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
               "タイトル",
             ),
           ),
-          body: Center(
-            child: _isEnabledPlaybackMode
-                ? IconButton(
-                    onPressed: () {
-                      _bloc.add(
-                        OnRequestPausingEvent(),
-                      );
-                    },
-                    icon: Icon(
-                      Icons.pause_circle_filled,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              InkWell(
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      _bpm.toString(),
+                      style: TextStyle(
+                        fontSize: 100.0,
+                      ),
                     ),
-                    iconSize: 60.0,
-                  )
-                : IconButton(
-                    onPressed: () {
-                      _bloc.add(
-                        OnRequestPlayingEvent(),
-                      );
-                    },
-                    icon: Icon(
-                      Icons.play_circle_filled,
-                    ),
-                    iconSize: 60.0,
                   ),
+                ),
+                onTap: () => print(""),
+              ),
+              SizedBox(
+                height: 50.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: SizedBox(),
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                            Icons.remove_circle,
+                          ),
+                          onPressed: () => _bloc.add(
+                            OnRequestChangingBpmEvent(),
+                          ),
+                          iconSize: 60.0,
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.add_circle,
+                          ),
+                          onPressed: () => _bloc.add(
+                            OnRequestChangingBpmEvent(),
+                          ),
+                          iconSize: 60.0,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: SizedBox(),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 50.0,
+              ),
+              _isEnabledPlaybackMode
+                  ? IconButton(
+                      onPressed: () {
+                        _bloc.add(
+                          OnRequestPausingEvent(),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.pause_circle_filled,
+                      ),
+                      iconSize: 60.0,
+                    )
+                  : IconButton(
+                      onPressed: () {
+                        _bloc.add(
+                          OnRequestPlayingEvent(),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.play_circle_filled,
+                      ),
+                      iconSize: 60.0,
+                    ),
+            ],
           ),
         );
       },

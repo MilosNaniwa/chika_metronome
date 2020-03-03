@@ -34,3 +34,13 @@ class OnCompletePausingEvent extends MetronomeScreenEvent {
   @override
   String toString() => '停止完了';
 }
+
+class OnRequestChangingBpmEvent extends MetronomeScreenEvent {
+  @override
+  String toString() => 'BPM変更要求';
+}
+
+class OnCompleteChangingBpmEvent extends MetronomeScreenEvent {
+  @override
+  String toString() => 'BPM変更完了';
+}

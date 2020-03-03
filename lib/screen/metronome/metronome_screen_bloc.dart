@@ -43,5 +43,15 @@ class MetronomeScreenBloc
     else if (event is OnCompletePausingEvent) {
       yield PauseOperatedState();
     }
+
+    // BPM変更要求
+    else if (event is OnRequestChangingBpmEvent) {
+      yield BpmChangingState();
+    }
+
+    // BPM変更完了
+    else if (event is OnCompleteChangingBpmEvent) {
+      yield BpmChangedState();
+    }
   }
 }

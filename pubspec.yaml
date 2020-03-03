@@ -18,6 +18,8 @@ dependencies:
 
   soundpool: ^1.0.1
 
+  flutter_picker: ^1.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
