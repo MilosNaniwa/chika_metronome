@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:soundpool/soundpool.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MetronomeScreenPage extends StatefulWidget {
   @override
@@ -237,6 +238,37 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
                       iconSize: 60.0,
                       color: Colors.green,
                     ),
+              SizedBox(
+                height: 50.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "by ",
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  InkWell(
+                    child: Text(
+                      "@milos_naniwa",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontFamily: "Noto",
+                      ),
+                    ),
+                    onTap: () async {
+                      const url = 'https://twitter.com/milos_naniwa';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                  ),
+                ],
+              ),
             ],
           ),
         );
