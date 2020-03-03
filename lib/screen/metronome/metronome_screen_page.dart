@@ -30,7 +30,7 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
   void initState() {
     super.initState();
 
-    _bpm = 120;
+    _bpm = 60;
 
     _soundPool = Soundpool(
       streamType: StreamType.notification,
@@ -104,7 +104,7 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
         else if (state is PauseOperatingState) {
           _isEnabledPlaybackMode = false;
 
-          _metronomeSubscription.pause();
+          _metronomeSubscription?.cancel();
 
           _bloc.add(
             OnCompletePausingEvent(),
@@ -120,7 +120,11 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
 
         // BPM変更中
         else if (state is BpmChangingState) {
-          _bpm++;
+          if (state.changeMode == MetronomeScreenConst.plus) {
+            _bpm++;
+          } else if (state.changeMode == MetronomeScreenConst.minus) {
+            _bpm--;
+          }
 
           _bloc.add(
             OnCompleteChangingBpmEvent(),
@@ -179,7 +183,9 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
                             Icons.remove_circle,
                           ),
                           onPressed: () => _bloc.add(
-                            OnRequestChangingBpmEvent(),
+                            OnRequestChangingBpmEvent(
+                              changeMode: MetronomeScreenConst.minus,
+                            ),
                           ),
                           iconSize: 60.0,
                         ),
@@ -188,7 +194,9 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
                             Icons.add_circle,
                           ),
                           onPressed: () => _bloc.add(
-                            OnRequestChangingBpmEvent(),
+                            OnRequestChangingBpmEvent(
+                              changeMode: MetronomeScreenConst.plus,
+                            ),
                           ),
                           iconSize: 60.0,
                         ),
@@ -215,6 +223,7 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
                         Icons.pause_circle_filled,
                       ),
                       iconSize: 60.0,
+                      color: Colors.red,
                     )
                   : IconButton(
                       onPressed: () {
@@ -226,6 +235,7 @@ class _MetronomeScreenPageState extends State<MetronomeScreenPage> {
                         Icons.play_circle_filled,
                       ),
                       iconSize: 60.0,
+                      color: Colors.green,
                     ),
             ],
           ),

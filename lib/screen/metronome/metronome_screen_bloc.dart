@@ -46,7 +46,9 @@ class MetronomeScreenBloc
 
     // BPM変更要求
     else if (event is OnRequestChangingBpmEvent) {
-      yield BpmChangingState();
+      yield BpmChangingState(
+        changeMode: event.changeMode,
+      );
     }
 
     // BPM変更完了

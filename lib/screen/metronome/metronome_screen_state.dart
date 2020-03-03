@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
 class MetronomeScreenState extends Equatable {
   @override
@@ -46,6 +47,12 @@ class PauseOperatedState extends MetronomeScreenState {
 }
 
 class BpmChangingState extends MetronomeScreenState {
+  final changeMode;
+
+  BpmChangingState({
+    @required this.changeMode,
+  });
+
   @override
   String toString() => 'BPM変更中';
 }

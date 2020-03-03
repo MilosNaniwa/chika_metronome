@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
 class MetronomeScreenEvent extends Equatable {
   @override
@@ -36,6 +37,12 @@ class OnCompletePausingEvent extends MetronomeScreenEvent {
 }
 
 class OnRequestChangingBpmEvent extends MetronomeScreenEvent {
+  final changeMode;
+
+  OnRequestChangingBpmEvent({
+    @required this.changeMode,
+  });
+
   @override
   String toString() => 'BPM変更要求';
 }
